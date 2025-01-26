@@ -3,31 +3,33 @@ using System.Collections.Generic;
 // https://github.com/codewriter-packages/Tri-Inspector.git
 using TriInspector;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Services.ServiceLocator
 {
     public class ServiceLocatorViewer : MonoBehaviour
     {
 
-        [field: SerializeReference] [ReadOnly] public List<object> objects { get; private set; }
-
+        [field: SerializeReference] public List<object> objects; // { get; private set; }
+        [field: SerializeField] public List<UnityEngine.Object> UnityObjects;
         [Button]
         public void ReadAllObjects()
         {
             objects = new List<object>();
-            var enumerator = ServiceLocator.GetEnumeratorObjects();
-            // enumerator.MoveNext();
-            //
-            // while(enumerator.Current != null)
-            // {
-            //     objects.Add(enumerator.Current);
-            //     enumerator.MoveNext();
-            // }
+            UnityObjects = new List<Object>();
             
+            var enumerator = ServiceLocator.GetEnumeratorObjects();
+
             foreach(KeyValuePair<Type, object> entry in enumerator)
             {
-                objects.Add(entry.Value);
-                // do something with entry.Value or entry.Key
+                if (entry.Value is UnityEngine.Object obj)
+                {
+                    UnityObjects.Add(obj);
+                }
+                else
+                {
+                    objects.Add(entry.Value);    
+                }
             }
         }
     }
